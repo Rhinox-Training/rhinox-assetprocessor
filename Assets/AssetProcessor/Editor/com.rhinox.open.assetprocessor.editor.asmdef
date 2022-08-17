@@ -1,0 +1,29 @@
+{
+    "name": "com.rhinox.open.assetprocessor.editor",
+    "references": [
+        "GUID:fc025ba4ac3997440926e87ec084af89",
+        "GUID:d06f234cedf03a546807d093bc1d736b",
+        "GUID:cacc866837634ee43b789e23dc71d920",
+        "GUID:478a2357cc57436488a56e564b08d223",
+        "GUID:63f11407a78fdae4d8a6e658a5e2ff23",
+        "GUID:5b875414f570dc74181d052da0dc3042",
+        "GUID:1ad92677df7f9164da26781357f2d997"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [
+        {
+            "name": "com.unity.addressables",
+            "expression": "1.0.0",
+            "define": "UNITY_ADDRESSABLES"
+        }
+    ],
+    "noEngineReferences": false
+}
