@@ -1,6 +1,6 @@
 # Asset Processor - Editor Automation
 
-[![openupm](https://img.shields.io/npm/v/com.rhinox.open.lightspeed?label=openupm&registry_uri=https://package.openupm.com)](https://openupm.com/packages/com.rhinox.open.lightspeed/)
+[![openupm](https://img.shields.io/npm/v/com.rhinox.open.assetprocessor?label=openupm&registry_uri=https://package.openupm.com)](https://openupm.com/packages/com.rhinox.open.assetprocessor/)
 
 Editor automation scripts to create a server-based import pipeline
 
