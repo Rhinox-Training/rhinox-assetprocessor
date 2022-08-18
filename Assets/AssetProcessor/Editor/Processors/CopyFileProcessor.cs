@@ -32,7 +32,7 @@ namespace Rhinox.AssetProcessor.Editor
         
         private static void EnsureDirectoryForFile(string filePath)
         {
-            string containingFolder = Path.GetDirectoryName(Path.GetFullPath(filePath));
+            string containingFolder = Path.GetDirectoryName(filePath);
             if (!string.IsNullOrWhiteSpace(containingFolder))
                 FileHelper.CreateAssetsDirectory(containingFolder);
         }

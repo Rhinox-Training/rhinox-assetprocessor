@@ -4,13 +4,8 @@ namespace Rhinox.AssetProcessor.Editor
 {
     public interface IProcessor
     {
-        // string FolderName { get; }
-        // IReadOnlyCollection<string> Extensions { get; }
+        bool CanParse(string groupName, string inputPath);
 
-        void Load(AssetProcessor manager);
-
-        bool CanParse(string clientName, string inputPath);
-
-        bool ParseFile(string clientName, string inputPath, out string[] outputPaths, bool overwrite = false);
+        bool ParseFile(string groupName, string inputPath, string outputFolder, out string[] outputPaths, bool overwrite = false);
     }
 }
