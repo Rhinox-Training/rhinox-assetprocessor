@@ -14,6 +14,8 @@ namespace Rhinox.AssetProcessor.Editor
         private EditorCoroutine _queueProcessor;
         
         public bool IsActive { get; private set; }
+
+        public bool IsBusy => IsActive && (_currentJob != null || (_requestQueue != null && _requestQueue.Count > 0));
         
         public void Run()
         {
@@ -26,6 +28,23 @@ namespace Rhinox.AssetProcessor.Editor
             _requestQueue.Clear();
             _queueProcessor = EditorCoroutineUtility.StartCoroutineOwnerless(ParseQueue());
             IsActive = true;
+        }
+
+        public void Kill()
+        {
+            if (!IsActive)
+                return;
+            
+            // Initialize queue
+            if (_queueProcessor != null)
+            {
+                EditorCoroutineUtility.StopCoroutine(_queueProcessor);
+                _queueProcessor = null;
+            }
+
+            if (_requestQueue != null)
+                _requestQueue.Clear();
+            IsActive = false;
         }
         
         public bool Enqueue(BaseContentJob job)
@@ -46,7 +65,7 @@ namespace Rhinox.AssetProcessor.Editor
             while (true)
             {
                 if (_requestQueue == null)
-                    yield return null;
+                    yield return new EditorWaitForSeconds(0.05f);
 
                 if (_currentJob != null)
                 {
@@ -68,7 +87,7 @@ namespace Rhinox.AssetProcessor.Editor
                     }
                 }
 
-                yield return null;
+                yield return new EditorWaitForSeconds(0.05f);
             }
         }
     }

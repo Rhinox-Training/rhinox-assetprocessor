@@ -11,7 +11,6 @@ namespace Rhinox.AssetProcessor.Editor
 {
     public abstract class BaseFileProcessor : IProcessor
     {
-        protected AssetProcessor _manager;
         public abstract string FolderName { get; }
         public IReadOnlyCollection<string> Extensions { get; }
 
@@ -33,17 +32,12 @@ namespace Rhinox.AssetProcessor.Editor
             }).ToArray();
         }
         
-        public void Load(AssetProcessor manager)
-        {
-            _manager = manager;
-        }
-
-        public virtual bool CanParse(string clientName, string inputPath)
+        public virtual bool CanParse(string groupName, string inputPath)
         {
             return MatchesExtensions(inputPath);
         }
 
-        public abstract bool ParseFile(string clientName, string inputPath, out string[] outputPaths, bool overwrite = false);
+        public abstract bool ParseFile(string groupName, string inputPath, string outputFolder, out string[] outputPaths, bool overwrite = false);
 
         protected virtual void TriggerProcessed(string inputPath, string outputPath)
         {
@@ -69,9 +63,9 @@ namespace Rhinox.AssetProcessor.Editor
         {
         }
 
-        public override bool CanParse(string clientName, string inputPath)
+        public override bool CanParse(string groupName, string inputPath)
         {
-            if (!base.CanParse(clientName, inputPath))
+            if (!base.CanParse(groupName, inputPath))
                 return false;
 
             if (string.IsNullOrWhiteSpace(AssetDatabase.AssetPathToGUID(inputPath)))
@@ -85,7 +79,7 @@ namespace Rhinox.AssetProcessor.Editor
             return !FileHelper.AssetExists(outputPath) || overwrite;
         }
 
-        public override bool ParseFile(string clientName, string inputPath, out string[] outputPaths, bool overwrite = false)
+        public override bool ParseFile(string groupName, string inputPath, string outputFolder, out string[] outputPaths, bool overwrite = false)
         {
             var objAsset = (T)AssetDatabase.LoadAssetAtPath(inputPath, typeof(T));
 
@@ -101,10 +95,10 @@ namespace Rhinox.AssetProcessor.Editor
                 return false;
             }
 
-            string outputFolder = GetOutputFolder(clientName);
-            string outputFileName = GetOutputFileName(clientName, inputPath, objAsset);
+            string outputFileName = GetOutputFileName(groupName, inputPath, objAsset);
             
-            var outputPath = Path.Combine(outputFolder, outputFileName);
+            
+            var outputPath = Path.Combine(outputFolder, $"{groupName}/{FolderName}/", outputFileName);
 
             if (!CanOverwrite(outputPath, overwrite))
             {
@@ -144,12 +138,6 @@ namespace Rhinox.AssetProcessor.Editor
         protected virtual void PreprocessFile(string inputPath)
         {
             
-        }
-
-        protected string GetOutputFolder(string clientName)
-        {
-            var outputPath = Path.Combine(_manager.OutputPath, $"{clientName}/{FolderName}/");
-            return outputPath;
         }
     }
 }
