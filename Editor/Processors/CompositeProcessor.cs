@@ -7,30 +7,18 @@ namespace Rhinox.AssetProcessor.Editor
     {
         private readonly IProcessor[] _childProcessors;
         
-        public string FolderName { get; }
-        public IReadOnlyCollection<string> Extensions { get; }
-
         public CompositeProcessor(params IProcessor[] processors)
         {
             _childProcessors = processors.ToArray();
         }
         
-        public void Load(AssetProcessor manager)
-        {
-            if (_childProcessors != null)
-            {
-                foreach (var processor in _childProcessors)
-                    processor.Load(manager);
-            }
-        }
-
-        public bool CanParse(string clientName, string inputPath)
+        public bool CanParse(string groupName, string inputPath)
         {
             if (_childProcessors != null)
             {
                 foreach (var processor in _childProcessors)
                 {
-                    if (!processor.CanParse(clientName, inputPath))
+                    if (!processor.CanParse(groupName, inputPath))
                         return false;
                 }
 
@@ -40,12 +28,12 @@ namespace Rhinox.AssetProcessor.Editor
             return false;
         }
 
-        public bool ParseFile(string clientName, string inputPath, out string[] outputPaths, bool overwrite = false)
+        public bool ParseFile(string clientName, string inputPath, string outputFolder, out string[] outputPaths, bool overwrite = false)
         {
             List<string> result = new List<string>();
             foreach (var processor in _childProcessors)
             {
-                if (processor.ParseFile(clientName, inputPath, out string[] processedPaths, true))
+                if (processor.ParseFile(clientName, inputPath, outputFolder, out string[] processedPaths, true))
                 {
                     result.AddRange(processedPaths);
                 }
