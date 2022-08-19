@@ -64,7 +64,7 @@ namespace Rhinox.AssetProcessor.Editor
     {
         private List<IProcessor> _processors;
 
-        private string PROCESSED_ASSET_INFO_PATH => FileHelper.GetFullPath("../processed_file.data", FileHelper.GetProjectPath());
+        private string PROCESSED_ASSET_INFO_PATH => FileHelper.GetFullPath("../processed_file.data", GlobalData.ProjectPath);
         private ProcessedAssetInfo _processedAssetInfo;
         
         public AssetProcessor(ICollection<IProcessor> processors)
