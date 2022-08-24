@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
 using Rhinox.Lightspeed.IO;
 using Rhinox.Perceptor;
 
@@ -27,7 +28,7 @@ namespace Rhinox.AssetProcessor.Editor
                 FileHelper.ClearDirectoryContentsIfExists(TargetPath);
             }
 
-            FileHelper.CopyDirectory(deployedPath, TargetPath, OverwriteTarget);
+            CopyDirectory(deployedPath, TargetPath, OverwriteTarget);
             PLog.Info($"Posting Content from '{deployedPath}' at '{TargetPath}'");
 
             if (!WillCopyContent)
@@ -37,6 +38,29 @@ namespace Rhinox.AssetProcessor.Editor
             }
 
             TriggerCompleted();
+        }
+        
+        private static void CopyDirectory(string source, string target, bool overwrite = false)
+        {
+            var stack = new Stack<FileHelper.Folders>();
+            stack.Push(new FileHelper.Folders(source, target));
+
+            while (stack.Count > 0)
+            {
+                var folders = stack.Pop();
+                Directory.CreateDirectory(folders.Target);
+                foreach (var file in Directory.GetFiles(folders.Source, "*.*"))
+                {
+                    string destFileName = Path.Combine(folders.Target, Path.GetFileName(file));
+                    File.Copy(file, destFileName, overwrite);
+                    PLog.Debug($"Copy file '{file}' to '{destFileName}' (overwrite: {overwrite})");
+                }
+
+                foreach (var folder in Directory.GetDirectories(folders.Source))
+                {
+                    stack.Push(new FileHelper.Folders(folder, Path.Combine(folders.Target, Path.GetFileName(folder))));
+                }
+            }
         }
     }
 }
