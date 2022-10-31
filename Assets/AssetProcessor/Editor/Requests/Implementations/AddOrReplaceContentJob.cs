@@ -171,12 +171,16 @@ namespace Rhinox.AssetProcessor.Editor
             }
 
             Log($"Import Started of: {string.Join(", ", files)}");
-            AssetDatabaseExt.ImportAssets(files, targetDir, (importedAssets) =>
+            bool result = AssetDatabaseExt.ImportAssets(files, targetDir, (importedAssets) =>
             {
                 _importedContent.AddRange(clientName, importedAssets.ImportedAssets);
                 clientImportTargets?.Add(clientName);
                 Log($"Import completed for '{clientName}' (added: {importedAssets.ImportedAssets.Count} - total asset count: {_importedContent.Count})");
             });
+
+            // NOTE: Job failed
+            if (!result)
+                TriggerCompleted(true, $"Import failed: {string.Join(", ", files)}");
         }
 
         // Logging

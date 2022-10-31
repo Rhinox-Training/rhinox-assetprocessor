@@ -70,6 +70,9 @@ namespace Rhinox.AssetProcessor.Editor
 
         protected void TriggerCompleted(bool failed = false, string errorString = "")
         {
+            if (IsCompleted) // Can only fire once
+                return;
+            
             IsRunning = false;
             IsCompleted = true;
             HasFailed = failed;
