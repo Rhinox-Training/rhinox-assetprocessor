@@ -45,15 +45,19 @@ namespace Rhinox.AssetProcessor.Editor
             var stack = new Stack<FileHelper.Folders>();
             stack.Push(new FileHelper.Folders(source, target));
 
+            int totalFiles = 0;
             while (stack.Count > 0)
             {
                 var folders = stack.Pop();
                 Directory.CreateDirectory(folders.Target);
-                foreach (var file in Directory.GetFiles(folders.Source, "*.*"))
+                var files = Directory.GetFiles(folders.Source, "*.*");
+                totalFiles += files.Length;
+                foreach (var file in files)
                 {
                     string destFileName = Path.Combine(folders.Target, Path.GetFileName(file));
-                    File.Copy(file, destFileName, overwrite);
                     PLog.Debug($"Copy file '{file}' to '{destFileName}' (overwrite: {overwrite})");
+                    File.Copy(file, destFileName, overwrite);
+                    PLog.Debug($"Copied file '{file}' to '{destFileName}'");
                 }
 
                 foreach (var folder in Directory.GetDirectories(folders.Source))
@@ -61,6 +65,8 @@ namespace Rhinox.AssetProcessor.Editor
                     stack.Push(new FileHelper.Folders(folder, Path.Combine(folders.Target, Path.GetFileName(folder))));
                 }
             }
+            
+            PLog.Info($"Copied {totalFiles} files from '{source}' to '{target}'");
         }
     }
 }
