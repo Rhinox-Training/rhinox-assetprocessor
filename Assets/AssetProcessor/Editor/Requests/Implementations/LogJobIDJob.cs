@@ -1,4 +1,6 @@
-﻿using Rhinox.Perceptor;
+﻿using System;
+using Rhinox.Perceptor;
+using UnityEngine;
 
 namespace Rhinox.AssetProcessor.Editor
 {
@@ -13,7 +15,7 @@ namespace Rhinox.AssetProcessor.Editor
         
         protected override void OnStart(BaseContentJob parentJob = null)
         {
-            PLog.Info($"Job with ID '{ID}' started...");
+            PLog.Info($"Job with ID '{ID}' started at {DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")}...");
             TriggerCompleted();
         }
     }

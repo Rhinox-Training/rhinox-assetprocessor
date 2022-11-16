@@ -56,6 +56,7 @@ namespace Rhinox.AssetProcessor.Editor
                     foreach (var group in keyCache)
                         _importedContent.Add(group, strippedFilePath);
                 }
+                PLog.Info($"Finished IncludeStaticAssetFolderJob for '{AssetFolder}' with extensionFilter '{ExtensionFilter}' - {files.Count} files imported");
             }
             catch (Exception e)
             {
