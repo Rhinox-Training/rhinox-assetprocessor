@@ -22,9 +22,11 @@ namespace Rhinox.AssetProcessor.Editor
         
         public static IEnumerator POSTJson<T>(string url, T jsonData, Action<T> onSuccess = null, Action<T> onFailure = null)
         {
-            using (UnityWebRequest www = UnityWebRequest.Post(url, JsonUtility.ToJson(jsonData)))
+            // NOTE: Need to use PUT here since POST would encode the json as url-encoded through the constructor
+            using (UnityWebRequest www = UnityWebRequest.Put(url, JsonUtility.ToJson(jsonData)))
             {
                 www.SetContentTypeJson();
+                www.method = "POST"; // NOTE: this reencodes the Put as a POST, keeping Json data as json
                 yield return www.SendWebRequest();
 
                 HandleUploadCompleted(www, jsonData, onSuccess, onFailure);
@@ -34,6 +36,7 @@ namespace Rhinox.AssetProcessor.Editor
         private static void SetContentTypeJson(this UnityWebRequest www)
         {
             www.SetRequestHeader("Content-Type", "application/json");
+            www.SetRequestHeader("Accept", "application/json");
         }
 
         private static void HandleUploadCompleted<T>(UnityWebRequest www, T body, Action<T> onSuccess = null, Action<T> onFailure = null)
