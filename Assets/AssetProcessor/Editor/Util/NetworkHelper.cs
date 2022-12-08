@@ -43,7 +43,7 @@ namespace Rhinox.AssetProcessor.Editor
         {
             if (www.isHttpError || www.isNetworkError)
             {
-                PLog.Error($"{www.method.ToUpperInvariant()} request failed on {www.url}, ERROR: {www.error}");
+                PLog.Error($"{www.method.ToUpperInvariant()} request failed on {www.url}, ERROR: {www.error}\nbody:{DecodeUpload(www.uploadHandler)}");
                 onFailure?.Invoke(body);
             }
             else
@@ -55,6 +55,8 @@ namespace Rhinox.AssetProcessor.Editor
 
         private static string DecodeUpload(UploadHandler handler)
         {
+            if (handler == null)
+                return "<empty>";
             return UnityWebRequest.UnEscapeURL(UTF8Encoding.UTF8.GetString(handler.data));
         }
     }
