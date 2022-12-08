@@ -43,7 +43,7 @@ namespace Rhinox.AssetProcessor.Editor
         {
             if (www.isHttpError || www.isNetworkError)
             {
-                PLog.Error($"{www.method.ToUpperInvariant()} request failed on {www.url}, ERROR: {www.error}\nbody:{DecodeUpload(www.uploadHandler)}");
+                PLog.Error($"{www.method.ToUpperInvariant()} request failed on {www.url}, ERROR: {www.error}\nbody-request:{DecodeUpload(www.uploadHandler)}\nbody-response:{DecodeDownload(www.downloadHandler)}");
                 onFailure?.Invoke(body);
             }
             else
@@ -51,6 +51,13 @@ namespace Rhinox.AssetProcessor.Editor
                 PLog.Info($"{www.method.ToUpperInvariant()} request\n{DecodeUpload(www.uploadHandler)}\ncompleted for '{www.url}' with response HTTP/{www.responseCode}: '{www.downloadHandler.text}'");
                 onSuccess?.Invoke(body);
             }
+        }
+
+        private static string DecodeDownload(DownloadHandler handler)
+        {
+            if (handler == null || handler.data == null)
+                return "<empty>";
+            return UnityWebRequest.UnEscapeURL(UTF8Encoding.UTF8.GetString(handler.data));
         }
 
         private static string DecodeUpload(UploadHandler handler)
