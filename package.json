@@ -1,7 +1,7 @@
 {
   "name": "com.rhinox.open.assetprocessor",
   "displayName": "Asset Processor - Editor Automation",
-  "version": "1.1.7",
+  "version": "1.1.8",
   "unity": "2019.4",
   "description": "Editor automation scripts to create a server-based import pipeline",
   "keywords": [
