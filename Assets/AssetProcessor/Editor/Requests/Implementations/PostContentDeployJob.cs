@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using Rhinox.Lightspeed.IO;
 using Rhinox.Perceptor;
@@ -56,8 +57,16 @@ namespace Rhinox.AssetProcessor.Editor
                 {
                     string destFileName = Path.Combine(folders.Target, Path.GetFileName(file));
                     PLog.Debug($"Copy file '{file}' to '{destFileName}' (overwrite: {overwrite})");
-                    File.Copy(file, destFileName, overwrite);
-                    PLog.Debug($"Copied file '{file}' to '{destFileName}'");
+                    try
+                    {
+                        File.Copy(file, destFileName, overwrite);
+                        PLog.Debug($"Copied file '{file}' to '{destFileName}', Exists: {FileHelper.Exists(destFileName)}");
+                    }
+                    catch (Exception e)
+                    {
+                        PLog.Debug($"Failed copy file '{file}' to '{destFileName}', {e.ToString()}");
+                        throw;
+                    }
                 }
 
                 foreach (var folder in Directory.GetDirectories(folders.Source))
