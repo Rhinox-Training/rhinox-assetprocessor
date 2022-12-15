@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Threading;
 using Rhinox.Lightspeed.IO;
 using Rhinox.Perceptor;
 
@@ -27,6 +29,13 @@ namespace Rhinox.AssetProcessor.Editor
             {
                 PLog.Info($"Clearing Content in '{TargetPath}'");
                 FileHelper.ClearDirectoryContentsIfExists(TargetPath);
+                
+                DirectoryInfo  di = new DirectoryInfo(TargetPath);
+                while (!IsEmpty(di))
+                {
+                    Thread.Sleep(250);
+                    di = new DirectoryInfo(TargetPath);
+                }
             }
 
             CopyDirectory(deployedPath, TargetPath, OverwriteTarget);
@@ -39,6 +48,15 @@ namespace Rhinox.AssetProcessor.Editor
             }
 
             TriggerCompleted();
+        }
+
+        private static bool IsEmpty(DirectoryInfo di)
+        {
+            if (di.EnumerateFiles().Any())
+                return false;
+            if (di.EnumerateDirectories().Any())
+                return false;
+            return true;
         }
         
         private static void CopyDirectory(string source, string target, bool overwrite = false)
