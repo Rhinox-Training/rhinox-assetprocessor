@@ -53,7 +53,7 @@ namespace Rhinox.AssetProcessor.Editor
             }
             catch (Exception e)
             {
-                Log($"Job {this} failed OnStart, reason: {e.ToString()}");
+                LogError($"Job {this} failed OnStart, reason: {e.ToString()}");
                 TriggerCompleted();
                 return false;
             }
@@ -93,6 +93,16 @@ namespace Rhinox.AssetProcessor.Editor
         protected virtual void Log(string line)
         {
             PLog.Info(line);
+        }
+        
+        protected virtual void LogWarning(string line)
+        {
+            PLog.Warn(line);
+        }
+
+        protected virtual void LogError(string line)
+        {
+            PLog.Error(line);
         }
     }
 }

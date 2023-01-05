@@ -87,7 +87,7 @@ namespace Rhinox.AssetProcessor.Editor
                 }
                 catch (Exception e)
                 {
-                    Log($"Import process {clientName} failed and cancelled, reason: {e.ToString()}");
+                    LogError($"Import process {clientName} failed and cancelled, reason: {e.ToString()}");
                     TriggerCompleted(); // TODO: mark failed
                     yield break;
                 }
@@ -164,9 +164,7 @@ namespace Rhinox.AssetProcessor.Editor
                         mode: BetterUnityPackageImporter.ImportMode.CommonParent);
                     int index = 0;
                     foreach (var entry in content)
-                    {
                         Log($"Content of '{file}' [{++index}/{content.Count}]: {entry}");
-                    }
                 }
             }
 

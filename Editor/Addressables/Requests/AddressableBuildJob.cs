@@ -19,7 +19,7 @@ namespace Rhinox.AssetProcessor.Editor
             var contentProcessorParent = GetParentOfType<IContentProcessorJob>();
             if (contentProcessorParent == null)
             {
-                Log($"Job '{this}': Nothing to process no IContentProcessorJob found in parents");
+                LogWarning($"Job '{this}': Nothing to process no IContentProcessorJob found in parents");
                 TriggerCompleted();
                 return;
             }

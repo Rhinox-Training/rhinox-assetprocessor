@@ -35,7 +35,7 @@ namespace Rhinox.AssetProcessor.Editor
             {
                 if (_activeStage.HasFailed)
                 {
-                    Log($"Stage {_activeStageIndex} '{_activeStage}' failed, exiting...");
+                    LogError($"Stage {_activeStageIndex} '{_activeStage}' failed, exiting...");
                     TriggerCompleted(true, _activeStage.ErrorString);
                 }
                 else

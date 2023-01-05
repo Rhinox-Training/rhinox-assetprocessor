@@ -82,7 +82,7 @@ namespace Rhinox.AssetProcessor.Editor
                     }
                     catch (Exception e)
                     {
-                        PLog.Debug($"Failed copy file '{file}' to '{destFileName}', {e.ToString()}");
+                        PLog.Error($"Failed copy file '{file}' to '{destFileName}', {e.ToString()}");
                         throw;
                     }
                 }

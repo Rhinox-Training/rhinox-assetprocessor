@@ -73,7 +73,10 @@ namespace Rhinox.AssetProcessor.Editor
                     
                     if (_currentJob.IsCompleted)
                     {
-                        PLog.Info($"Request {_currentJob} completed at {DateTime.Now.ToLocalTime()}.");
+                        if (_currentJob.HasFailed)
+                            PLog.Error($"Request {_currentJob} failed at {DateTime.Now.ToLocalTime()}, reason: {_currentJob.ErrorString}");
+                        else
+                            PLog.Info($"Request {_currentJob} completed at {DateTime.Now.ToLocalTime()}.");
                         _currentJob = null;
                     }
                 }

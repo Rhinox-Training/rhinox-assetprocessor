@@ -10,7 +10,7 @@
             if (contentDeployParent == null)
             {
                 string errorText = $"Job '{this}': Nothing to process no {typeof(T).Name} found in parents";
-                Log(errorText);
+                LogError(errorText);
                 TriggerCompleted(_shouldFailOnParentNotfound, errorText);
                 return;
             }
