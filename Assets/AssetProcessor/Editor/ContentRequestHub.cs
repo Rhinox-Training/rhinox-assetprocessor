@@ -17,6 +17,12 @@ namespace Rhinox.AssetProcessor.Editor
 
         public bool IsBusy => IsActive && (_currentJob != null || (_requestQueue != null && _requestQueue.Count > 0));
         
+        public delegate void JobEventHandler();
+        public delegate void JobFailureEventHandler(BaseContentJob job, string reason);
+
+        public event JobEventHandler JobsCompleted;
+        public event JobFailureEventHandler JobFailed;
+        
         public void Run()
         {
             if (IsActive)
@@ -74,7 +80,10 @@ namespace Rhinox.AssetProcessor.Editor
                     if (_currentJob.IsCompleted)
                     {
                         if (_currentJob.HasFailed)
+                        {
                             PLog.Error($"Request {_currentJob} failed at {DateTime.Now.ToLocalTime()}, reason: {_currentJob.ErrorString}");
+                            JobFailed?.Invoke(_currentJob, _currentJob.ErrorString);
+                        }
                         else
                             PLog.Info($"Request {_currentJob} completed at {DateTime.Now.ToLocalTime()}.");
                         _currentJob = null;
@@ -88,6 +97,8 @@ namespace Rhinox.AssetProcessor.Editor
                         _currentJob.Start();
                         PLog.Info($"Request {_currentJob} started at {DateTime.Now.ToLocalTime()}.");
                     }
+                    else
+                        JobsCompleted?.Invoke();
                 }
 
                 yield return new EditorWaitForSeconds(0.05f);
