@@ -61,7 +61,7 @@ namespace Rhinox.AssetProcessor.Editor
 
         private IEnumerator ProcessRequest()
         {
-            _clientImportFolders = GetClientImportFolders();
+            _clientImportFolders = GroupFolderHandler.GetGroupImportFolders(_newAssetsPath);
             if (_clientImportFolders.Count == 0)
             {
                 TriggerCompleted();
@@ -83,6 +83,7 @@ namespace Rhinox.AssetProcessor.Editor
 
                 try
                 {
+                    // Note: list is altered inside but cannot `ref` it due to it being used in a lambda 
                     ProcessClientData(clientName, clientImportFolder, _clientImportedFolders);
                 }
                 catch (Exception e)
@@ -112,25 +113,6 @@ namespace Rhinox.AssetProcessor.Editor
                 if (containEqual)
                     TriggerCompleted();
             }
-        }
-
-        private IReadOnlyCollection<DirectoryInfo> GetClientImportFolders()
-        {
-            DirectoryInfo di = new DirectoryInfo(_newAssetsPath);
-            if (!di.Exists)
-            {
-                PLog.Error($"Directory '{_newAssetsPath}' does not exist, exiting...");
-                return Array.Empty<DirectoryInfo>();
-            }
-
-            var subDirectories = FileHelper.GetChildFolders(_newAssetsPath);
-            if (subDirectories.Count == 0)
-            {
-                PLog.Warn($"Directory '{_newAssetsPath}' was empty (need folders by client name), exiting...");
-                return Array.Empty<DirectoryInfo>();
-            }
-
-            return subDirectories;
         }
 
         private void ClearTargetFolder(string clientName = null)

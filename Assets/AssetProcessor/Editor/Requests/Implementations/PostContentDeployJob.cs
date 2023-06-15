@@ -31,7 +31,7 @@ namespace Rhinox.AssetProcessor.Editor
                 FileHelper.ClearDirectoryContentsIfExists(TargetPath);
                 
                 DirectoryInfo  di = new DirectoryInfo(TargetPath);
-                while (!IsEmpty(di))
+                while (!IsEmpty(di)) // wait until the OS actually cleared the folder
                 {
                     Thread.Sleep(250);
                     di = new DirectoryInfo(TargetPath);
@@ -52,6 +52,8 @@ namespace Rhinox.AssetProcessor.Editor
 
         private static bool IsEmpty(DirectoryInfo di)
         {
+            if (!di.Exists)
+                return true;
             if (di.EnumerateFiles().Any())
                 return false;
             if (di.EnumerateDirectories().Any())
