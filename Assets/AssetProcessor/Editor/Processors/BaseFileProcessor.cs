@@ -5,6 +5,7 @@ using System.Linq;
 using Rhinox.Lightspeed;
 using Rhinox.Lightspeed.IO;
 using Rhinox.Lightspeed.Reflection;
+using Rhinox.Perceptor;
 using UnityEditor;
 
 namespace Rhinox.AssetProcessor.Editor
@@ -81,16 +82,20 @@ namespace Rhinox.AssetProcessor.Editor
 
         public override bool ParseFile(string groupName, string inputPath, string outputFolder, out string[] outputPaths, bool overwrite = false)
         {
+            PLog.Info($"Parsing File '{inputPath}' with processor: {GetType().Name}");
+            
             var objAsset = (T)AssetDatabase.LoadAssetAtPath(inputPath, typeof(T));
 
             if (objAsset == null)
             {
+                PLog.Info("Parse failed: Could not load asset");
                 outputPaths = null;
                 return false;
             }
 
             if (!ValidateInput(inputPath, objAsset))
             {
+                PLog.Info("Parse failed: Invalid asset");
                 outputPaths = null;
                 return false;
             }
