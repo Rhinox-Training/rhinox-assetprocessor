@@ -88,14 +88,14 @@ namespace Rhinox.AssetProcessor.Editor
 
             if (objAsset == null)
             {
-                PLog.Info("Parse failed: Could not load asset");
+                PLog.Warn("Parse failed: Could not load asset");
                 outputPaths = null;
                 return false;
             }
 
             if (!ValidateInput(inputPath, objAsset))
             {
-                PLog.Info("Parse failed: Invalid asset");
+                PLog.Warn("Parse failed: Invalid asset");
                 outputPaths = null;
                 return false;
             }

@@ -20,10 +20,11 @@ namespace Rhinox.AssetProcessor.Editor
         
         public string OutputFolder { get; }
         
-        private BatchedContentProcessorJob(AssetProcessor assetProcessor, string outputFolder)
+        private BatchedContentProcessorJob(AssetProcessor assetProcessor, string outputFolder, bool clear)
         {
             _processor = assetProcessor;
             _importedContent = new ImportedContentCache();
+            _clear = clear;
             OutputFolder = outputFolder;
         }
 
@@ -32,15 +33,16 @@ namespace Rhinox.AssetProcessor.Editor
             if (outputFolder == null || !outputFolder.StartsWith("Assets")) throw new ArgumentException(nameof(outputFolder));
 
             var assetProcessor = new AssetProcessor(processors);
-            var job = new BatchedContentProcessorJob(assetProcessor, outputFolder);
-            if (clear)
-                job.ClearOutputFolder();
+            var job = new BatchedContentProcessorJob(assetProcessor, outputFolder, clear);
             return job;
         }
         
         
         protected override void OnStart(BaseContentJob parentJob = null)
         {
+            if (_clear)
+                ClearOutputFolder();
+            
             var contentProcessorParent = GetParentOfType<IContentProcessorJob>();
             if (contentProcessorParent == null)
             {

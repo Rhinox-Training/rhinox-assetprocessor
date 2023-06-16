@@ -1,6 +1,7 @@
 ﻿using System.IO;
 using Rhinox.Lightspeed.IO;
 using UnityEditor;
+using UnityEngine;
 
 namespace Rhinox.AssetProcessor.Editor
 {
@@ -20,8 +21,10 @@ namespace Rhinox.AssetProcessor.Editor
 
         protected override bool OnParseFile(T asset, string inputPath, string outputPath, out string[] additionalPaths)
         {
-            if (File.Exists(outputPath))
-                File.Delete(outputPath);
+            // if (File.Exists(outputPath))
+            //     File.Delete(outputPath);
+
+            Debug.Log($"Moving asset from '{inputPath}' -> '{outputPath}'");
             EnsureDirectoryForFile(outputPath);
             AssetDatabase.CopyAsset(inputPath, outputPath);
             AssetDatabase.Refresh();
