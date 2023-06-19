@@ -67,7 +67,13 @@ namespace Rhinox.AssetProcessor.Editor
 
             if (_replaceContent)
             {
-                ClearTargetFolder(_groupDir);
+                var folder = _importTargetDir;
+                if (!_groupDir.IsNullOrEmpty())
+                    folder = Path.Combine(folder, _groupDir);
+                
+                Log($"Operation is replace: ensuring folder '{folder}' is clean");
+
+                ClearTargetFolder(folder);
                 yield return new WaitForSeconds(2.0f);
             }
 
@@ -85,15 +91,15 @@ namespace Rhinox.AssetProcessor.Editor
             TriggerCompleted();
         }
 
-        private void ClearTargetFolder(string group = null)
+        private void ClearTargetFolder(string folder)
         {
-            DirectoryInfo di;
-            if (group.IsNullOrEmpty())
-                di = new DirectoryInfo(_importTargetDir);
-            else
-                di = new DirectoryInfo(Path.Combine(_importTargetDir, group));
+            DirectoryInfo di = new DirectoryInfo(folder);
+
             if (!di.Exists)
+            {
+                Log($"Folder '{di.FullName}' does not exist yet... We can continue.");
                 return;
+            }
 
             Log($"Clearing folder {di.FullName}");
 
