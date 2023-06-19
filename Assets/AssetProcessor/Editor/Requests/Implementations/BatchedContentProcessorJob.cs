@@ -10,7 +10,11 @@ using UnityEditor;
 
 namespace Rhinox.AssetProcessor.Editor
 {
-    public class BatchedContentProcessorJob : BaseContentJob, IContentProcessorJob
+    /// <summary>
+    ///  Compiles the given assets and transforms them into 1 or more new assets
+    ///  Replaces the upper ImportedContentCache with its own serverdata one
+    /// </summary>
+    public class BatchedContentProcessorJob : BaseChildContentJob<IContentProcessorJob>, IContentProcessorJob
     {
         private readonly AssetProcessor _processor;
         
@@ -22,10 +26,11 @@ namespace Rhinox.AssetProcessor.Editor
         private BatchedContentProcessorJob(AssetProcessor assetProcessor, string outputFolder)
         {
             _processor = assetProcessor;
+            // Do not copy outer one, this replaces it
             _importedContent = new ImportedContentCache();
             OutputFolder = outputFolder;
         }
-
+        
         public static BatchedContentProcessorJob Create(ICollection<IProcessor> processors, string outputFolder)
         {
             if (outputFolder == null || !outputFolder.StartsWith("Assets")) throw new ArgumentException(nameof(outputFolder));
@@ -34,18 +39,10 @@ namespace Rhinox.AssetProcessor.Editor
             var job = new BatchedContentProcessorJob(assetProcessor, outputFolder);
             return job;
         }
-        
-        
-        protected override void OnStart(BaseContentJob parentJob = null)
-        {
-            var contentProcessorParent = GetParentOfType<IContentProcessorJob>();
-            if (contentProcessorParent == null)
-            {
-                Log($"Job '{this}': Nothing to process no IContentProcessorJob found in parents");
-                TriggerCompleted();
-                return;
-            }
-            var importedAssets = contentProcessorParent.ImportedContent;
+
+        protected override void OnStartChild(IContentProcessorJob parentJob)
+        {            
+            var importedAssets = parentJob.ImportedContent;
             var processedAssets = new List<string>();
             if (importedAssets != null)
             {
@@ -87,7 +84,10 @@ namespace Rhinox.AssetProcessor.Editor
                 yield return new EditorWaitForSeconds(0.5f);
                 AssetDatabase.Refresh();
             }
-            AssetDatabase.Refresh();
+            AssetDatabase.Refresh(); 
+            
+            yield return new EditorWaitForSeconds(0.5f);
+
             TriggerCompleted();
         }
     }

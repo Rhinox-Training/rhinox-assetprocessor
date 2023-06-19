@@ -4,7 +4,7 @@ using Rhinox.Perceptor;
 
 namespace Rhinox.AssetProcessor.Editor
 {
-    public class AddressableBuildJob : BaseContentJob, IContentDeployJob
+    public class AddressableBuildJob : BaseChildContentJob<IContentProcessorJob>, IContentDeployJob
     {
         private readonly string[] _defaultLabels;
         public string TargetPath { get; private set; }
@@ -13,17 +13,10 @@ namespace Rhinox.AssetProcessor.Editor
         {
             _defaultLabels = defaultLabels.ToArray();
         }
-        
-        protected override void OnStart(BaseContentJob parentJob = null)
+
+        protected override void OnStartChild(IContentProcessorJob parentJob)
         {
-            var contentProcessorParent = GetParentOfType<IContentProcessorJob>();
-            if (contentProcessorParent == null)
-            {
-                LogWarning($"Job '{this}': Nothing to process no IContentProcessorJob found in parents");
-                TriggerCompleted();
-                return;
-            }
-            var importedAssets = contentProcessorParent.ImportedContent;
+            var importedAssets = parentJob.ImportedContent;
 
             AddressableContentBuilder.Clear();
 

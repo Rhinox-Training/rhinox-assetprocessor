@@ -77,6 +77,19 @@ namespace Rhinox.AssetProcessor
             }
         }
 
+        public IReadOnlyCollection<string> GetAllAssets(bool excludeProcessed = true)
+        {
+            var list = new List<string>();
+            foreach (var content in _content)
+            {
+                if (excludeProcessed && content.Processed)
+                    continue;
+                
+                list.Add(content.AssetPath);
+            }
+            return list;
+        }
+
         public IReadOnlyCollection<string> GetAssets(string groupName, bool excludeProcessed = true)
         {
             var list = new List<string>();

@@ -76,11 +76,11 @@ namespace Rhinox.AssetProcessor.Editor
                 foreach (var file in files)
                 {
                     string destFileName = Path.Combine(folders.Target, Path.GetFileName(file));
-                    PLog.Debug($"Copy file '{file}' to '{destFileName}' (overwrite: {overwrite})");
+                    PLog.Debug($"Copying file '{file}' to '{destFileName}' (overwrite: {overwrite})");
                     try
                     {
                         File.Copy(file, destFileName, overwrite);
-                        PLog.Debug($"Copied file '{file}' to '{destFileName}', Exists: {FileHelper.Exists(destFileName)}");
+                        PLog.Debug($"Copy completed, Exists: {FileHelper.Exists(destFileName)}");
                     }
                     catch (Exception e)
                     {

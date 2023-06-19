@@ -114,6 +114,7 @@ namespace Rhinox.AssetProcessor.Editor
             PreprocessFile(inputPath);
             
             FileHelper.CreateAssetsDirectory(outputFolder);
+            
             if (OnParseFile(objAsset, inputPath, outputPath, out string[] additionalPaths))
             {
                 TriggerProcessed(inputPath, outputPath);
