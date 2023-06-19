@@ -44,7 +44,7 @@ namespace Rhinox.AssetProcessor.Editor
 #endif
 
             // Wait a bit, the operation can take some time
-            yield return new WaitForSeconds(.2f);
+            yield return new EditorWaitForSeconds(2.0f);
             
             TriggerCompleted();
         }

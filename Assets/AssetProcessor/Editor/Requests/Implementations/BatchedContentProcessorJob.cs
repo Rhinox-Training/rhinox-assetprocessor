@@ -74,6 +74,9 @@ namespace Rhinox.AssetProcessor.Editor
 
         private IEnumerator CreateMetaFilesAndFinish(ICollection<string> processedAssets)
         {
+            // File copies / processors may be slightly delayed...
+            yield return new EditorWaitForSeconds(2.0f);
+            
             if (processedAssets != null && processedAssets.Count > 0)
                 AssetDatabase.ForceReserializeAssets(processedAssets, ForceReserializeAssetsOptions.ReserializeMetadata);
             const int count = 10;

@@ -78,7 +78,7 @@ namespace Rhinox.AssetProcessor.Editor
                 if (_replaceContent)
                 {
                     ClearTargetFolder(clientName); // TODO: should we support clearing the full folder structure as well, or only on a per customer basis for the requests?
-                    yield return new WaitForSeconds(2.0f);
+                    yield return new EditorWaitForSeconds(2.0f);
                 }
 
                 try
@@ -93,7 +93,7 @@ namespace Rhinox.AssetProcessor.Editor
                     yield break;
                 }
 
-                yield return new WaitForSeconds(1.0f);
+                yield return new EditorWaitForSeconds(1.0f);
             }
         }
 

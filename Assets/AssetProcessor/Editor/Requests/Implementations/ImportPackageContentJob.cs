@@ -74,7 +74,7 @@ namespace Rhinox.AssetProcessor.Editor
                 Log($"Operation is replace: ensuring folder '{folder}' is clean");
 
                 ClearTargetFolder(folder);
-                yield return new WaitForSeconds(2.0f);
+                yield return new EditorWaitForSeconds(2.0f);
             }
 
             try

@@ -12,11 +12,6 @@ namespace Rhinox.AssetProcessor
             public string Group;
             public string AssetPath;
             public bool Processed;
-
-            public void MarkProcessed()
-            {
-                Processed = true;
-            }
         }
         
         private List<ImportedContent> _content;
@@ -74,8 +69,12 @@ namespace Rhinox.AssetProcessor
 
         public void MarkAllProcessed()
         {
-            foreach (var content in _content)
-                content.MarkProcessed();
+            for (var i = 0; i < _content.Count; i++)
+            {
+                var content = _content[i];
+                content.Processed = true;
+                _content[i] = content;
+            }
         }
 
         public IReadOnlyCollection<string> GetAssets(string groupName, bool excludeProcessed = true)
@@ -92,6 +91,19 @@ namespace Rhinox.AssetProcessor
                 list.Add(content.AssetPath);
             }
             return list;
+        }
+
+        public int GetUnprocessedCount()
+        {
+            int count = 0;
+            
+            foreach (var content in _content)
+            {
+                if (!content.Processed)
+                    count++;
+            }
+
+            return count;
         }
     }
 }
