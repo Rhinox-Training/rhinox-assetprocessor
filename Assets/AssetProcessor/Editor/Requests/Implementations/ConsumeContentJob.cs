@@ -5,6 +5,8 @@ namespace Rhinox.AssetProcessor.Editor
         protected override void OnStartChild(IContentProcessorJob parentJob)
         {
             parentJob.ImportedContent.MarkAllProcessed();
+            
+            TriggerCompleted();
         }
     }
 }
