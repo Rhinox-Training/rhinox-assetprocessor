@@ -6,21 +6,33 @@ using System.Linq;
 namespace Rhinox.AssetProcessor
 {
     public class ImportedContentCache
-    {
-        public Dictionary<string, List<string>> _map;
+    { 
+        private struct ImportedContent
+        {
+            public string Group;
+            public string AssetPath;
+            public bool Processed;
 
-        public IReadOnlyCollection<string> Assets => _map.Values.SelectMany(x => x).ToArray();
-        public int Count => Assets.Count;
-        public IReadOnlyCollection<string> Groups => _map.Keys;
+            public void MarkProcessed()
+            {
+                Processed = true;
+            }
+        }
+        
+        private List<ImportedContent> _content;
+
+        public IReadOnlyCollection<string> Assets => _content.Select(x => x.AssetPath).ToArray();
+        public int Count => _content.Count;
+        public IReadOnlyCollection<string> Groups => _content.Select(x => x.Group).Distinct().ToArray();
 
         public ImportedContentCache()
         {
-            _map = new Dictionary<string, List<string>>();
+            _content = new List<ImportedContent>();
         }
 
         public ImportedContentCache(ImportedContentCache other)
         {
-            _map = other._map.ToDictionary(x => x.Key, x => x.Value);
+            _content = other._content.ToList();
         }
 
         public bool Add(string groupName, string assetPath)
@@ -28,13 +40,13 @@ namespace Rhinox.AssetProcessor
             if (groupName == null || string.IsNullOrWhiteSpace(assetPath))
                 return false;
             
-            if (!_map.ContainsKey(groupName))
-                _map.Add(groupName, new List<string>());
-
-            var list = _map[groupName];
-            if (!list.Contains(assetPath))
-                list.Add(assetPath);
-            _map[groupName] = list;
+            // TODO: this was checked for duplicates... Is this needed?
+            _content.Add(new ImportedContent
+            {
+                Group = groupName,
+                AssetPath = assetPath
+            });
+            
             return true;
         }
 
@@ -42,20 +54,10 @@ namespace Rhinox.AssetProcessor
         {
             if (groupName == null || assetPaths == null)
                 return false;
+
+            foreach (var path in assetPaths)
+                Add(groupName, path);
             
-            if (!_map.ContainsKey(groupName))
-                _map.Add(groupName, new List<string>());
-            
-            var list = _map[groupName];
-            foreach (var assetPath in assetPaths)
-            {
-                if (string.IsNullOrWhiteSpace(assetPath))
-                    continue;
-                
-                if (!list.Contains(assetPath))
-                    list.Add(assetPath);
-            }
-            _map[groupName] = list;
             return true;
         }
         
@@ -64,27 +66,32 @@ namespace Rhinox.AssetProcessor
             if (groupName == null || assetPaths == null)
                 return false;
             
-            if (!_map.ContainsKey(groupName))
-                _map.Add(groupName, new List<string>());
+            foreach (var path in assetPaths)
+                Add(groupName, path);
             
-            var list = _map[groupName];
-            foreach (var assetPath in assetPaths)
-            {
-                if (string.IsNullOrWhiteSpace(assetPath))
-                    continue;
-                
-                if (!list.Contains(assetPath))
-                    list.Add(assetPath);
-            }
-            _map[groupName] = list;
             return true;
         }
 
-        public IReadOnlyCollection<string> GetAssets(string groupName)
+        public void MarkAllProcessed()
         {
-            if (!_map.ContainsKey(groupName))
-                return Array.Empty<string>();
-            return _map[groupName];
+            foreach (var content in _content)
+                content.MarkProcessed();
+        }
+
+        public IReadOnlyCollection<string> GetAssets(string groupName, bool excludeProcessed = true)
+        {
+            var list = new List<string>();
+            foreach (var content in _content)
+            {
+                if (content.Group != groupName)
+                    continue;
+
+                if (excludeProcessed && content.Processed)
+                    continue;
+                
+                list.Add(content.AssetPath);
+            }
+            return list;
         }
     }
 }

@@ -13,36 +13,31 @@ namespace Rhinox.AssetProcessor.Editor
     public class BatchedContentProcessorJob : BaseContentJob, IContentProcessorJob
     {
         private readonly AssetProcessor _processor;
-        private readonly bool _clear;
         
         protected ImportedContentCache _importedContent;
         public ImportedContentCache ImportedContent => _importedContent;
         
         public string OutputFolder { get; }
         
-        private BatchedContentProcessorJob(AssetProcessor assetProcessor, string outputFolder, bool clear)
+        private BatchedContentProcessorJob(AssetProcessor assetProcessor, string outputFolder)
         {
             _processor = assetProcessor;
             _importedContent = new ImportedContentCache();
-            _clear = clear;
             OutputFolder = outputFolder;
         }
 
-        public static BatchedContentProcessorJob Create(ICollection<IProcessor> processors, string outputFolder, bool clear = false)
+        public static BatchedContentProcessorJob Create(ICollection<IProcessor> processors, string outputFolder)
         {
             if (outputFolder == null || !outputFolder.StartsWith("Assets")) throw new ArgumentException(nameof(outputFolder));
 
             var assetProcessor = new AssetProcessor(processors);
-            var job = new BatchedContentProcessorJob(assetProcessor, outputFolder, clear);
+            var job = new BatchedContentProcessorJob(assetProcessor, outputFolder);
             return job;
         }
         
         
         protected override void OnStart(BaseContentJob parentJob = null)
         {
-            if (_clear)
-                ClearOutputFolder();
-            
             var contentProcessorParent = GetParentOfType<IContentProcessorJob>();
             if (contentProcessorParent == null)
             {
@@ -91,32 +86,6 @@ namespace Rhinox.AssetProcessor.Editor
             }
             AssetDatabase.Refresh();
             TriggerCompleted();
-        }
-        
-        private void ClearOutputFolder()
-        {
-            PLog.Info($"Clearing folder {OutputFolder}");
-#if UNITY_EDITOR
-            // Remove dir (recursively)
-            var fullPath = FileHelper.GetFullPath(OutputFolder, GlobalData.ProjectPath);
-            if (Directory.Exists(fullPath))
-            {
-                Directory.Delete(fullPath, true);
-                var metaPath = GetFolderMetaPath(fullPath);
-                if (File.Exists(metaPath))
-                    File.Delete(metaPath);
-            }
-#else
-            FileHelper.ClearAssetDirectory(OutputPath);
-#endif
-        }
-
-        private string GetFolderMetaPath(string folderPath)
-        {
-            folderPath = folderPath.Trim();
-            if (folderPath.EndsWith("/") || folderPath.EndsWith("\\"))
-                return folderPath.Substring(0, folderPath.Length - 1) + ".meta";
-            return folderPath + ".meta";
         }
     }
 }
