@@ -38,7 +38,10 @@ namespace Rhinox.AssetProcessor.Editor
         {
             var parentContentProcessor = GetParentOfType<IContentProcessorJob>();
             if (parentContentProcessor != null)
+            {
+                PLog.Debug($"Fetching ImportedContent from {parentContentProcessor.GetType().Name}");
                 _importedContent = new ImportedContentCache(parentContentProcessor.ImportedContent);
+            }
             else
                 _importedContent = new ImportedContentCache();
             
@@ -161,8 +164,7 @@ namespace Rhinox.AssetProcessor.Editor
                 {
                     _importedContent.AddRange(clientName, importedAssets.ImportedAssets);
                     clientImportTargets?.Add(clientName);
-                    Log(
-                        $"Import completed for '{clientName}' (added: {importedAssets.ImportedAssets.Count} - total asset count: {_importedContent.Count})");
+                    Log($"Import completed for '{clientName}' (added: {importedAssets.ImportedAssets.Count} - total asset count: {_importedContent.Count})");
                 }
             });
 

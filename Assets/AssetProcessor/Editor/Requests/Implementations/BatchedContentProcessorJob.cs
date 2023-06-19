@@ -41,7 +41,8 @@ namespace Rhinox.AssetProcessor.Editor
         }
 
         protected override void OnStartChild(IContentProcessorJob parentJob)
-        {            
+        {
+            PLog.Debug($"Fetching ImportedContent from {parentJob.GetType().Name}");
             var importedAssets = parentJob.ImportedContent;
             var processedAssets = new List<string>();
             if (importedAssets != null)

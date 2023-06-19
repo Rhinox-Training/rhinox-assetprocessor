@@ -39,7 +39,10 @@ namespace Rhinox.AssetProcessor.Editor
         {
             var parentContentProcessor = GetParentOfType<IContentProcessorJob>();
             if (parentContentProcessor != null)
+            {
+                PLog.Debug($"Fetching ImportedContent from {parentContentProcessor.GetType().Name}");
                 _importedContent = new ImportedContentCache(parentContentProcessor.ImportedContent);
+            }
             else
                 _importedContent = new ImportedContentCache();
 
