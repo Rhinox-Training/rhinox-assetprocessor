@@ -87,11 +87,8 @@ namespace Rhinox.AssetProcessor.Editor
             catch (Exception e)
             {
                 LogError($"Import process {_unityPackagePath} failed and cancelled, reason: {e.ToString()}");
-                TriggerCompleted(); // TODO: mark failed
-                yield break;
+                TriggerCompleted(true, e.Message);
             }
-
-            TriggerCompleted();
         }
 
         private void ClearTargetFolder(string folder)
@@ -135,6 +132,7 @@ namespace Rhinox.AssetProcessor.Editor
                 {
                     _importedContent.AddRange(_groupDir, importedAssets.ImportedAssets);
                     Log($"Import completed for '{packagePath}' (added: {importedAssets.ImportedAssets.Count} - total asset count: {_importedContent.Count})");
+                    TriggerCompleted();
                 }
             });
 
