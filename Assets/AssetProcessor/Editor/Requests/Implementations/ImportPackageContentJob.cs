@@ -18,6 +18,8 @@ namespace Rhinox.AssetProcessor.Editor
         private readonly string _importTargetDir;
         private readonly string _groupDir;
         private readonly bool _replaceContent;
+
+        public string PackageName => Path.GetFileNameWithoutExtension(_unityPackagePath);
         
         private EditorCoroutine _start;
 
@@ -65,7 +67,6 @@ namespace Rhinox.AssetProcessor.Editor
 
         private IEnumerator ProcessRequest()
         {
-            var packageName = Path.GetFileNameWithoutExtension(_unityPackagePath);
             Log($"Parsing '{_unityPackagePath}'");
 
             if (_replaceContent)

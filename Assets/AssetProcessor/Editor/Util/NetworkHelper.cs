@@ -2,8 +2,10 @@
 using System.Collections;
 using System.Text;
 using Rhinox.Perceptor;
+using Rhinox.Utilities;
 using UnityEngine;
 using UnityEngine.Networking;
+using Utility = Rhinox.Lightspeed.Utility;
 
 namespace Rhinox.AssetProcessor.Editor
 {
@@ -11,7 +13,7 @@ namespace Rhinox.AssetProcessor.Editor
     {
         public static IEnumerator PUTJson<T>(string url, T jsonData, Action<T> onSuccess = null, Action<T> onFailure = null)
         {
-            using (UnityWebRequest www = UnityWebRequest.Put(url, JsonUtility.ToJson(jsonData)))
+            using (UnityWebRequest www = UnityWebRequest.Put(url, Utility.ToJson(jsonData, true)))
             {
                 www.SetContentTypeJson();
                 yield return www.SendWebRequest();
@@ -23,7 +25,7 @@ namespace Rhinox.AssetProcessor.Editor
         public static IEnumerator POSTJson<T>(string url, T jsonData, Action<T> onSuccess = null, Action<T> onFailure = null)
         {
             // NOTE: Need to use PUT here since POST would encode the json as url-encoded through the constructor
-            using (UnityWebRequest www = UnityWebRequest.Put(url, JsonUtility.ToJson(jsonData)))
+            using (UnityWebRequest www = UnityWebRequest.Put(url, Utility.ToJson(jsonData, true)))
             {
                 www.SetContentTypeJson();
                 www.method = "POST"; // NOTE: this reencodes the Put as a POST, keeping Json data as json
