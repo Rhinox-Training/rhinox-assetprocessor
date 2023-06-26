@@ -15,6 +15,12 @@ namespace Rhinox.AssetProcessor.Editor
         
         protected override void OnStart(BaseContentJob parentJob = null)
         {
+            if (EditorUserBuildSettings.activeBuildTarget == _targetPlatform)
+            {
+                TriggerCompleted();
+                return;
+            }
+        
             var group = BuildPipeline.GetBuildTargetGroup(_targetPlatform);
             if (!EditorUserBuildSettings.SwitchActiveBuildTarget(group, _targetPlatform))
             {
@@ -24,7 +30,8 @@ namespace Rhinox.AssetProcessor.Editor
             if (EditorApplication.isCompiling)
             {
                 PLog.Info("Delaying until compilation is finished...");
-                CompilationPipeline.compilationFinished += OnCompilationFinished;
+                // Note: this never finished; most likely state is cleared
+                // CompilationPipeline.compilationFinished += OnCompilationFinished;
             }
             else
             {
@@ -34,11 +41,19 @@ namespace Rhinox.AssetProcessor.Editor
                 
         }
 
-        private void OnCompilationFinished(object obj)
+        public override void Update()
         {
-            CompilationPipeline.compilationFinished -= OnCompilationFinished;
-            
+            if (EditorApplication.isCompiling)
+                return;
+
             TriggerCompleted();
         }
+
+        // private void OnCompilationFinished(object obj)
+        // {
+        //     CompilationPipeline.compilationFinished -= OnCompilationFinished;
+        //     
+        //     TriggerCompleted();
+        // }
     }
 }
