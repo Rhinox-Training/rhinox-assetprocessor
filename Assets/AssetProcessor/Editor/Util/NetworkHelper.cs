@@ -33,18 +33,13 @@ namespace Rhinox.AssetProcessor.Editor
             }
         }
         
-        public static IEnumerator PUTJson<T>(string url, T jsonData, Action<T> onSuccess = null, Action<string> onFailure = null)
+        public static IEnumerator PUTJson<T>(string url, T jsonData, Action<T> onSuccess = null, Action<T> onFailure = null)
         {
             using (UnityWebRequest www = UnityWebRequest.Put(url, Utility.ToJson(jsonData, true)))
             {
                 www.SetContentTypeJson();
                 yield return www.SendWebRequest();
-
-                if (www.IsRequestValid(out string error))
-                {
-                    onSuccess
-                }
-
+                
                 HandleUploadCompleted(www, jsonData, onSuccess, onFailure);
             }
         }
