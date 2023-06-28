@@ -31,9 +31,13 @@ namespace Rhinox.AssetProcessor.Editor
 
         public static string BuildFolder => AddressablesExt.GetTargetBuildPath();
         
-        public static void Build(Action<AddressableContentBuildResult> callback = null)
+        public static void Build(Action<AddressableContentBuildResult> callback = null, bool allowUpdate = true)
         {
-            var result = AddressablesExt.BuildOrUpdatePlayerContent();
+            AddressablesPlayerBuildResult result;
+            if (allowUpdate)
+                result = AddressablesExt.BuildOrUpdatePlayerContent();
+            else
+                AddressableAssetSettings.BuildPlayerContent(out result);
             callback?.Invoke(new AddressableContentBuildResult(BuildFolder, result));
         }
         

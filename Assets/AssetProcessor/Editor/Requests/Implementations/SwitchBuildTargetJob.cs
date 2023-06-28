@@ -1,9 +1,15 @@
 using Rhinox.Perceptor;
 using UnityEditor;
-using UnityEditor.Compilation;
 
 namespace Rhinox.AssetProcessor.Editor
 {
+    /// <summary>
+    /// NOTE: EditorUserBuildSettings.SwitchActiveBuildTarget is not available when running the Editor in batch mode.
+    /// This is because changing the build target requires recompiling script code for the given target which cannot
+    /// be done while script code is executing (not a problem in in the editor as the operation is simply deferred
+    /// but batch mode will immediately exit after having executed the designated script code).
+    /// To set the build target to use in batch mode, use the buildTarget command-line switch.
+    /// </summary>
     public class SwitchBuildTargetJob : BaseContentJob
     {
         private readonly BuildTarget _targetPlatform;
@@ -43,6 +49,8 @@ namespace Rhinox.AssetProcessor.Editor
 
         public override void Update()
         {
+            base.Update();
+            
             if (EditorApplication.isCompiling)
                 return;
 

@@ -7,11 +7,13 @@ namespace Rhinox.AssetProcessor.Editor
     public class AddressableBuildJob : BaseChildContentJob<IContentProcessorJob>, IContentDeployJob
     {
         private readonly string[] _defaultLabels;
+        private bool _allowUpdate;
         public string TargetPath { get; private set; }
 
-        public AddressableBuildJob(params string[] defaultLabels)
+        public AddressableBuildJob(bool allowUpdate, params string[] defaultLabels)
         {
             _defaultLabels = defaultLabels.ToArray();
+            _allowUpdate = allowUpdate;
         }
 
         protected override void OnStartChild(IContentProcessorJob parentJob)
@@ -52,7 +54,7 @@ namespace Rhinox.AssetProcessor.Editor
                 TargetPath = result.BuildFolder;
                 
                 TriggerCompleted(!result.IsSuccessful, $"Built at '{result.BuildFolder}' failed: {result.BuildInfo.Error}");
-            });
+            }, _allowUpdate);
         }
     }
 }
