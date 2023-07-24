@@ -79,10 +79,9 @@ namespace Rhinox.AssetProcessor.Editor
             ErrorString = errorString;
             OnCompleted(failed, errorString);
         }
-
+        
         protected virtual void OnCompleted(bool failed = false, string errorString = "")
         {
-            
         }
 
         public override string ToString()

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -94,10 +95,16 @@ namespace Rhinox.AssetProcessor.Editor
             {
                 if (!processor.CanParse(clientName, inputPath))
                     continue;
+
+                var timer = new Stopwatch();
+                timer.Start();
                 
                 if (!processor.ParseFile(clientName, inputPath, outputFolder, out string[] processedPaths, true))
                     PLog.Error($"Something went wrong during parsing of {clientName} - {inputPath} (processor: {processor.GetType().Name})");
 
+                timer.Stop();
+                PLog.Debug($"Time taken to process asset: {timer.ElapsedMilliseconds}ms");
+                
                 result = processedPaths;
                 break;
             }

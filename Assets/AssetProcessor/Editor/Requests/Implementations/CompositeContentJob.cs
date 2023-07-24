@@ -43,7 +43,6 @@ namespace Rhinox.AssetProcessor.Editor
                     Log($"Stage {_activeStageIndex} '{_activeStage}' completed.");
                     AdvanceStage(_activeStage);
                 }
-
             }
         }
 
