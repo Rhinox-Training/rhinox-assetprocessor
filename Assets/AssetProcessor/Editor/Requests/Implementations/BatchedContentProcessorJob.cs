@@ -50,9 +50,10 @@ namespace Rhinox.AssetProcessor.Editor
                 int count = 0;
                 foreach (var client in importedAssets.Groups)
                 {
-                    foreach (var importedAsset in importedAssets.GetAssets(client))
+                    foreach (var importedGuid in importedAssets.GetAssetGuids(client))
                     {
-                        var processedPaths = _processor.ProcessAsset(client, importedAsset, OutputFolder); // NOTE: Synchronous
+                        var path = AssetDatabase.GUIDToAssetPath(importedGuid);
+                        var processedPaths = _processor.ProcessAsset(client, path, OutputFolder); // NOTE: Synchronous
                         foreach (var processedPath in processedPaths)
                         {
                             if (!string.IsNullOrWhiteSpace(processedPath))
@@ -60,29 +61,18 @@ namespace Rhinox.AssetProcessor.Editor
                             processedAssets.Add(processedPath);
                         }
 
-                        Log($"Job '{this}' progress [{++count}/{importedAssets.Count}]: {client}#{importedAsset} -> '{string.Join(", ", processedPaths)}'");
+                        Log($"Job '{this}' progress [{++count}/{importedAssets.Count}]: {client}#{path} -> '{string.Join(", ", processedPaths)}'");
                     }
                 }
             }
             else
                 Log($"Job '{this}': Processed 0 assets");
 
-            EditorCoroutineUtility.StartCoroutineOwnerless(CreateMetaFilesAndFinish(processedAssets));
-        }
-
-        private IEnumerator CreateMetaFilesAndFinish(ICollection<string> processedAssets)
-        {
-            // File copies / processors may be slightly delayed...
-            // yield return new EditorWaitForSeconds(2.0f);
-            
-            // if (processedAssets != null && processedAssets.Count > 0)
-            //     AssetDatabase.ForceReserializeAssets(processedAssets, ForceReserializeAssetsOptions.ReserializeMetadata);
-            
             // Ensure everything is saved...
             AssetDatabase.SaveAssets();
             
-            yield return new EditorWaitForSeconds(0.5f);
-
+            AssetDatabase.Refresh();
+            
             TriggerCompleted();
         }
     }

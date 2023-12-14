@@ -39,14 +39,15 @@ namespace Rhinox.AssetProcessor.Editor
 
         protected override void OnStart(BaseContentJob parentJob = null)
         {
-            var parentContentProcessor = GetParentOfType<IContentProcessorJob>();
-            if (parentContentProcessor != null)
-            {
-                PLog.Debug($"Fetching ImportedContent from {parentContentProcessor.GetType().Name}");
-                _importedContent = new ImportedContentCache(parentContentProcessor.ImportedContent);
-            }
-            else
-                _importedContent = new ImportedContentCache();
+            // var parentContentProcessor = GetParentOfType<IContentProcessorJob>();
+            // if (parentContentProcessor != null)
+            // {
+            //     PLog.Debug($"Fetching ImportedContent from {parentContentProcessor.GetType().Name}");
+            //     _importedContent = new ImportedContentCache(parentContentProcessor.ImportedContent);
+            // }
+            // else
+            
+            _importedContent = new ImportedContentCache();
 
             _start = EditorCoroutineUtility.StartCoroutineOwnerless(ProcessRequest());
 

@@ -1,10 +1,9 @@
 using System;
 using System.Collections;
 using System.IO;
+using System.Threading.Tasks;
 using Rhinox.Lightspeed.IO;
 using Rhinox.Perceptor;
-using Unity.EditorCoroutines.Editor;
-using UnityEngine;
 
 namespace Rhinox.AssetProcessor.Editor
 {
@@ -12,8 +11,6 @@ namespace Rhinox.AssetProcessor.Editor
     {
         private readonly string _targetFolder;
         
-        private EditorCoroutine _start;
-
         public ClearFolderJob(string folder)
         {
             if (folder == null) throw new ArgumentNullException(nameof(folder));
@@ -22,11 +19,6 @@ namespace Rhinox.AssetProcessor.Editor
         }
 
         protected override void OnStart(BaseContentJob parentJob = null)
-        {
-            _start = EditorCoroutineUtility.StartCoroutineOwnerless(ProcessRequest());
-        }
-
-        private IEnumerator ProcessRequest()
         {
             PLog.Info($"Clearing folder {_targetFolder}");
 #if UNITY_EDITOR
@@ -42,13 +34,10 @@ namespace Rhinox.AssetProcessor.Editor
 #else
             FileHelper.ClearAssetDirectory(OutputPath);
 #endif
-
-            // Wait a bit, the operation can take some time
-            yield return new EditorWaitForSeconds(2.0f);
             
             TriggerCompleted();
         }
-        
+
         private string GetFolderMetaPath(string folderPath)
         {
             folderPath = folderPath.Trim();

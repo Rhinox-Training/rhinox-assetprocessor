@@ -31,6 +31,18 @@ namespace Rhinox.AssetProcessor.Editor
 
         public static string BuildFolder => AddressablesExt.GetTargetBuildPath();
         
+        public static AddressableAssetGroup FindGroup(Func<AddressableAssetGroup, bool> predicate)
+        {
+            var settings = AddressableAssetSettingsDefaultObject.Settings;
+            foreach (var group in settings.groups)
+            {
+                if (predicate(group))
+                    return group;
+            }
+
+            return null;
+        }
+        
         public static void Build(Action<AddressableContentBuildResult> callback = null, bool allowUpdate = true)
         {
             AddressablesPlayerBuildResult result;
@@ -41,13 +53,21 @@ namespace Rhinox.AssetProcessor.Editor
             callback?.Invoke(new AddressableContentBuildResult(BuildFolder, result));
         }
         
-        public static int AddAssets(IReadOnlyCollection<string> assetPaths, params string[] labels)
+        public static int AddAssets(IReadOnlyCollection<string> assetGuids, params string[] labels)
+        {
+            return AddAssets(null, assetGuids, labels);
+        }
+        
+        public static int AddAssets(AddressableAssetGroup group, IReadOnlyCollection<string> assetGuids, params string[] labels)
         {
             var settings = AddressableAssetSettingsDefaultObject.Settings;
+            if (group == null)
+                group = settings.DefaultGroup;
+                    
             var entriesAdded = new List<AddressableAssetEntry>();
-            foreach (var assetPath in assetPaths)
+            foreach (var guid in assetGuids)
             {
-                if (TryCreateEntry(settings, assetPath, out AddressableAssetEntry assetEntry, labels))
+                if (TryCreateEntry(settings, group, guid, out AddressableAssetEntry assetEntry, labels))
                     entriesAdded.Add(assetEntry);
             }
 
@@ -60,8 +80,21 @@ namespace Rhinox.AssetProcessor.Editor
         public static void Clear()
         {
             var settings = AddressableAssetSettingsDefaultObject.Settings;
+            ClearGroup(settings.DefaultGroup);
+        }
+        
+        [MenuItem("Modulab/Clear Addressables")]
+        public static void ClearAddressables()
+        {
+            foreach (var group in AddressableAssetSettingsDefaultObject.Settings.groups)
+                ClearGroup(group);
+        }
+
+        public static void ClearGroup(AddressableAssetGroup group)
+        {
+            var settings = AddressableAssetSettingsDefaultObject.Settings;
             var assetEntries = new List<AddressableAssetEntry>();
-            settings.GetAllAssets(assetEntries, false, groupFilter: x => x.Default);
+            settings.GetAllAssets(assetEntries, false, groupFilter: x => x == group);
             int oldCount = assetEntries.Count;
             
             foreach (var entry in assetEntries)
@@ -74,29 +107,30 @@ namespace Rhinox.AssetProcessor.Editor
             PLog.Info<AddressableBuilderLogger>($"Cleared {oldCount - newCount} assets, remaining {newCount}");
         }
         
-        private static bool TryCreateEntry(AddressableAssetSettings settings, string assetPath, out AddressableAssetEntry assetEntry, params string[] labels)
+        private static bool TryCreateEntry(AddressableAssetSettings settings, AddressableAssetGroup group, string assetGuid, out AddressableAssetEntry assetEntry, params string[] labels)
         {
-            if (assetPath == null)
+            if (assetGuid == null)
             {
                 assetEntry = null;
                 return false;
             }
 
-            var guid = AssetDatabase.AssetPathToGUID(assetPath);
-            if (string.IsNullOrEmpty(guid))
+            if (string.IsNullOrEmpty(assetGuid))
             {
                 assetEntry = null;
                 return false;
             }
 
-            var group = settings.DefaultGroup;
-            var entry = settings.CreateOrMoveEntry(guid, group);
+            var entry = settings.CreateOrMoveEntry(assetGuid, group);
 
-            entry.address = assetPath;
+            entry.address = AssetDatabase.GUIDToAssetPath(assetGuid);
             foreach (var label in labels)
                 entry.labels.Add(label);
             assetEntry = entry;
             return true;
         }
+
+        private static bool TryCreateEntry(AddressableAssetSettings settings, string assetPath, out AddressableAssetEntry assetEntry, params string[] labels)
+            => TryCreateEntry(settings, settings.DefaultGroup, assetPath, out assetEntry, labels);
     }
 }
