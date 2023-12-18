@@ -1,3 +1,4 @@
+using UnityEditor;
 using UnityEditor.AddressableAssets.Settings;
 
 namespace Rhinox.AssetProcessor.Editor
@@ -13,6 +14,8 @@ namespace Rhinox.AssetProcessor.Editor
         
         protected override void OnStart(BaseContentJob parentJob = null)
         {
+            AssetDatabase.Refresh();
+
             AddressableContentBuilder.ClearGroup(_group);
             
             TriggerCompleted();

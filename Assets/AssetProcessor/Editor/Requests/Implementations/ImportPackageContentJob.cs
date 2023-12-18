@@ -7,6 +7,7 @@ using Rhinox.Lightspeed.IO;
 using Rhinox.Utilities.Editor;
 using Rhinox.Perceptor;
 using Unity.EditorCoroutines.Editor;
+using UnityEditor;
 using UnityEngine;
 using EditorCoroutine = Unity.EditorCoroutines.Editor.EditorCoroutine;
 
@@ -49,7 +50,7 @@ namespace Rhinox.AssetProcessor.Editor
             
             _importedContent = new ImportedContentCache();
 
-            _start = EditorCoroutineUtility.StartCoroutineOwnerless(ProcessRequest());
+            ProcessRequest();
 
             AssetDatabaseExt.JobStarted += OnImportJobStarted;
             AssetDatabaseExt.JobFinished += OnImportJobFinished;
@@ -61,12 +62,9 @@ namespace Rhinox.AssetProcessor.Editor
 
             AssetDatabaseExt.JobFinished -= OnImportJobFinished;
             AssetDatabaseExt.JobStarted -= OnImportJobStarted;
-
-            if (_start != null)
-                EditorCoroutineUtility.StopCoroutine(_start);
         }
 
-        private IEnumerator ProcessRequest()
+        private async void ProcessRequest()
         {
             Log($"Parsing '{_unityPackagePath}'");
 
@@ -78,8 +76,7 @@ namespace Rhinox.AssetProcessor.Editor
                 
                 Log($"Operation is replace: ensuring folder '{folder}' is clean");
 
-                ClearTargetFolder(folder);
-                yield return new EditorWaitForSeconds(2.0f);
+                FileHelper.ClearDirectoryContentsIfExists(folder);
             }
 
             try
@@ -93,27 +90,10 @@ namespace Rhinox.AssetProcessor.Editor
             }
         }
 
-        private void ClearTargetFolder(string folder)
-        {
-            DirectoryInfo di = new DirectoryInfo(folder);
-
-            if (!di.Exists)
-            {
-                Log($"Folder '{di.FullName}' does not exist yet... We can continue.");
-                return;
-            }
-
-            Log($"Clearing folder {di.FullName}");
-
-            foreach (FileInfo file in di.EnumerateFiles())
-                file.Delete();
-
-            foreach (DirectoryInfo dir in di.EnumerateDirectories())
-                dir.Delete(true);
-        }
-
         private void ProcessData(string packagePath, bool verbose = false)
         {
+            AssetDatabase.Refresh();
+            
             string targetDir = Path.Combine(_importTargetDir, _groupDir);
             if (verbose)
             {
@@ -137,6 +117,8 @@ namespace Rhinox.AssetProcessor.Editor
                     TriggerCompleted();
                 }
             });
+            
+            AssetDatabase.Refresh();
 
             // NOTE: Job failed
             if (!result)
@@ -147,7 +129,7 @@ namespace Rhinox.AssetProcessor.Editor
         //==============================================================================================================
         private void OnImportJobFinished(IImportJob job)
         {
-            Log($"Job '{job.Name}' completed...");
+            Log($"Job '{job.Name}' completed, {job.ImportChanges.ImportedAssets.Count} assets imported.");
         }
 
         private void OnImportJobStarted(IImportJob job)

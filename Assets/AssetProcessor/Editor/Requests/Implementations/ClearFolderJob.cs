@@ -4,6 +4,7 @@ using System.IO;
 using System.Threading.Tasks;
 using Rhinox.Lightspeed.IO;
 using Rhinox.Perceptor;
+using UnityEditor;
 
 namespace Rhinox.AssetProcessor.Editor
 {
@@ -34,6 +35,8 @@ namespace Rhinox.AssetProcessor.Editor
 #else
             FileHelper.ClearAssetDirectory(OutputPath);
 #endif
+            
+            AssetDatabase.Refresh();
             
             TriggerCompleted();
         }
