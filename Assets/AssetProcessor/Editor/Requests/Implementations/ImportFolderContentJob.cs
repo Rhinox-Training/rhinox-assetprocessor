@@ -28,6 +28,11 @@ namespace Rhinox.AssetProcessor.Editor
             foreach (var guid in assetGuids)
             {
                 var assetPath = AssetDatabase.GUIDToAssetPath(guid);
+                
+                // We don't care about folder assets
+                if (Directory.Exists(assetPath))
+                    continue;
+                
                 _importedContent.Add(_group, assetPath);
             }
             
