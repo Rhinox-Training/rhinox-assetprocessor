@@ -1,7 +1,7 @@
 {
   "name": "com.rhinox.open.assetprocessor",
   "displayName": "Asset Processor - Editor Automation",
-  "version": "2.0.1",
+  "version": "2.1.0",
   "unity": "2019.4",
   "description": "Editor automation scripts to create a server-based import pipeline",
   "keywords": [
@@ -11,8 +11,8 @@
   ],
   "category": "Unity",
   "dependencies": {
-    "com.rhinox.open.utilities": "1.10.3",
-    "com.rhinox.open.lightspeed": "1.8.9",
+    "com.rhinox.open.utilities": "1.14.0",
+    "com.rhinox.open.lightspeed": "2.2.0",
     "com.rhinox.open.guiutils": "3.0.2",
     "com.rhinox.open.perceptor": "0.4.0"
   },

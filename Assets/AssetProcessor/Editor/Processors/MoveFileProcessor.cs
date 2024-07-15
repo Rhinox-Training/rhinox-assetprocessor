@@ -22,19 +22,12 @@ namespace Rhinox.AssetProcessor.Editor
         {
             if (File.Exists(outputPath))
                 File.Delete(outputPath);
-            EnsureDirectoryForFile(outputPath);
+            FileHelper.EnsureDirectoryForFile(outputPath);
             AssetDatabase.MoveAsset(inputPath, outputPath);
             AssetDatabase.Refresh();
             //File.Copy(inputPath, outputPath, true);
             additionalPaths = null;
             return true;
-        }
-        
-        private static void EnsureDirectoryForFile(string filePath)
-        {
-            string containingFolder = Path.GetDirectoryName(filePath);
-            if (!string.IsNullOrWhiteSpace(containingFolder))
-                FileHelper.CreateAssetsDirectory(containingFolder);
         }
     }
 }
